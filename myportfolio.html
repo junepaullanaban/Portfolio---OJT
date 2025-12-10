@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Junepaul Lanaban - Portfolio</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script type="text/javascript" src="https://cdn.emailjs.com/sdk/3.2.0/email.min.js"></script>
+
+    
+    <style>
+        /* Apply the Inter font to the body */
+        body {
+            font-family: 'Inter', sans-serif;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        /* Styles for dark and light modes */
+        .dark {
+            background-color: #1e1e1e;
+            color: #ffffff;
+        }
+        .light {
+            background-color: #f3f4f6;
+            color: #1e1e1e;
+        }
+        .dark .bg-card { background-color: #242424; }
+        .light .bg-card { background-color: #ffffff; }
+        .dark .bg-sidebar { background-color: #1e1e1e; }
+        .light .bg-sidebar { background-color: #e5e7eb; }
+        .dark .bg-info { background-color: #2c2c2c; }
+        .light .bg-info { background-color: #f9fafb; }
+        .dark .text-subtle { color: #9ca3af; }
+        .light .text-subtle { color: #6b7280; }
+        .dark .text-bright { color: #EDDD21; }
+        .light .text-bright { color: #4b5563; }
+        
+        /* Basic show/hide logic for sections */
+        .section-content {
+            display: none;
+        }
+
+        /* Adds a fade-in animation when the section becomes active */
+        .section-content.active {
+            display: block;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        /* Keyframe animation for a smooth fade-in effect */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        /* Highlights the active tab link */
+        .tab-link.active-link {
+            font-weight: bold;
+            color: #EDDD21;
+        }
+        .light .tab-link.active-link {
+            color: #1a73e8; /* A nice blue for light mode */
+        }
+        
+        /* Styles for the full-image modal */
+        .image-modal {
+            display: none;
+            position: fixed;
+            z-index: 100;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.9);
+            justify-content: center;
+            align-items: center;
+            transition: opacity 0.3s ease-in-out;
+            opacity: 0;
+        }
+
+        .image-modal.visible {
+            display: flex;
+            opacity: 1;
+        }
+        
+        /* Apply a blur effect to the main content when the modal is active */
+        .blur-background > :not(.image-modal) {
+            filter: blur(5px);
+            pointer-events: none;
+        }
+
+        .modal-content {
+            max-width: 90%;
+            max-height: 90%;
+            display: block;
+            object-fit: contain;
+        }
+
+        .close-button {
+            position: absolute;
+            top: 20px;
+            right: 35px;
+            color: #fff;
+            font-size: 40px;
+            font-weight: bold;
+            transition: 0.3s;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body class="dark p-8 md:p-16 flex items-center justify-center min-h-screen">
+
+    <div class="bg-card rounded-3xl shadow-2xl p-4 md:p-8 flex flex-col lg:flex-row w-full max-w-7xl">
+
+        <!-- Profile and Contact Info Section -->
+        <div class="bg-sidebar rounded-2xl p-6 md:p-8 flex flex-col items-center lg:w-1/3 mb-6 lg:mb-0 lg:mr-8">
+            <div class="w-36 h-36 md:w-48 md:h-48 rounded-full overflow-hidden mb-6">
+                <!-- Profile picture replaced with a publicly accessible image you uploaded -->
+                <img src="id.jpg" alt="Profile Picture of Junepaul Lanaban" class="w-full h-full object-cover">
+            </div>
+            <h1 class="text-3xl md:text-4xl font-bold mb-2 text-center">Junepaul Lanaban</h1>
+            <p class="text-md text-subtle mb-6 text-center"> Front-End Web Developer</p>
+            
+            <div class="w-full space-y-4">
+                <!-- Email with copy functionality -->
+                <div id="email-contact" class="flex items-center space-x-4 bg-info rounded-xl p-4 cursor-pointer relative group">
+                <svg class="w-6 h-6 fill-black dark:fill-blue-400 group-hover:fill-blue-300 transition-colors duration-200" viewBox="0 0 24 24">
+                <path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zM4 6h16l-8 5-8-5zM4 18V8.1l7.5 4.5c.3.2.7.2 1 0L20 8.1V18H4z"/>
+             </svg>
+                    <div>
+                        <p class="text-xs text-subtle uppercase tracking-wide">Email</p>
+                        <p id="email-text" class="text-sm md:text-base">junlanaban09@gmail.com</p>
+                    </div>
+                    <span id="email-tooltip" class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-gray-800 text-white text-xs rounded py-1 px-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">Copy to Clipboard</span>
+                </div>
+                <!-- Phone with copy functionality -->
+                <div id="phone-contact" class="flex items-center space-x-4 bg-info rounded-xl p-4 cursor-pointer relative group">
+                    <svg class="w-6 h-6 fill-blue-400" viewBox="0 0 24 24">
+                        <path d="M20 18c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2H4c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2H20zM4 6h16v10H4zM9 13H7c-.55 0-1-.45-1-1v-2c0-.55.45-1 1-1h2c.55 0 1 .45 1 1v2c0 .55-.45 1-1 1zM17 13h-2c-.55 0-1-.45-1-1v-2c0-.55.45-1 1-1h2c.55 0 1 .45 1 1v2c0 .55-.45 1-1 1zM13 13h-2c-.55 0-1-.45-1-1v-2c0-.55.45-1 1-1h2c.55 0 1 .45 1 1v2c0 .55-.45 1-1 1z"/>
+                    </svg>
+                    <div>
+                        <p class="text-xs text-subtle uppercase tracking-wide">Phone</p>
+                        <p id="phone-text" class="text-sm md:text-base">(0951) 888 1407</p>
+                    </div>
+                    <span id="phone-tooltip" class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-gray-800 text-white text-xs rounded py-1 px-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">Copy to Clipboard</span>
+                </div>
+                <div class="flex items-center space-x-4 bg-info rounded-xl p-4">
+                    <svg class="w-6 h-6 fill-blue-400" viewBox="0 0 24 24">
+                        <path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM7 10h5v5H7v-5z"/>
+                    </svg>
+                    <div>
+                        <p class="text-xs text-subtle uppercase tracking-wide">Birthday</p>
+                        <p class="text-sm md:text-base">June 12, 2003</p>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-4 bg-info rounded-xl p-4">
+                    <svg class="w-6 h-6 fill-blue-400" viewBox="0 0 24 24">
+                        <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
+                    </svg>
+                    <div>
+                        <p class="text-xs text-subtle uppercase tracking-wide">Location</p>
+                        <p class="text-sm md:text-base">Phase 3 purok talakitok dawis digos city</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="w-full mt-6 space-y-6">
+                <!-- NOTE: The local file path for the resume has been replaced. For this to work, you must upload the file to a public web server and use that URL. -->
+                <a href="Junepaul lanaban Resume.pdf" download="Junepaul_Lanaban_Resume.pdf" class="flex justify-center items-center w-full py-3 bg-blue-600 rounded-lg text-white font-bold hover:bg-blue-700 transition-colors duration-200">
+                    <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L10 11.586l2.293-2.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd" />
+                    </svg>
+                    Download Resume
+                </a>
+
+                <!-- Application Letter Download Button -->
+                  <a href="application letter caed 1.pdf" download="Junepaul_Lanaban_Application_Letter.pdf" 
+                   class="flex justify-center items-center w-full py-3 bg-green-600 rounded-lg text-white font-bold hover:bg-green-700 transition-colors duration-200">
+                   <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                     <path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L10 11.586l2.293-2.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd" />
+                </svg>
+                 Download Application Letter
+                 </a>
+            </div>
+        </div>
+
+        <!-- Main Content Section -->
+        <div class="w-full lg:w-2/3">
+            <div class="flex justify-between items-center mb-6">
+                <nav class="flex flex-wrap justify-center space-x-2 md:space-x-4 bg-sidebar p-2 rounded-xl">
+                    <button data-section="about" class="tab-link px-2 md:px-4 py-2 rounded-lg text-subtle hover:text-bright transition-colors duration-200">About</button>
+                    <button data-section="skills" class="tab-link px-2 md:px -4 py-2 rounded-lg text-subtle hover:text-bright transition-colors duration-200">Skills</button>
+                    <button data-section="education" class="tab-link px-2 md:px-4 py-2 rounded-lg text-subtle hover:text-bright transition-colors duration-200">Education</button>
+                    <button data-section="certification" class="tab-link px-2 md:px-4 py-2 rounded-lg text-subtle hover:text-bright transition-colors duration-200">Certificate</button>
+                    <button data-section="projects" class="tab-link px-2 md:px-4 py-2 rounded-lg text-subtle hover:text-bright transition-colors duration-200">Projects</button>
+                    <button data-section="contact" class="tab-link px-2 md:px-4 py-2 rounded-lg text-subtle hover:text-bright transition-colors duration-200">Contact</button>
+                </nav>
+                <button id="theme-toggle" type="button" title="Toggle dark and light mode" class="p-2 rounded-full bg-info text-subtle hover:text-bright transition-colors duration-200">
+                    <svg id="moon-icon" class="w-6 h-6 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+                    </svg>
+                    <svg id="sun-icon" class="w-6 h-6 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+                    </svg>
+                </button>
+            </div>
+
+            <div id="about" class="section-content p-6 md:p-8 bg-sidebar rounded-2xl active">
+                <h2 class="text-3xl md:text-4xl font-bold mb-6">About Me</h2>
+                <p class="text-subtle leading-relaxed mb-6">I am a final-year Bachelor of Science in Information Technology student at University Of Mindanao Digos College, driven by a strong passion for designing and developing robust, efficient, and scalable applications. Throughout my academic journey, I have gained a solid foundation in data structures, algorithms, and software development methodologies, which has strengthened my problem-solving and analytical skills.
+                I am proficient in various programming languages and frameworks, including JavaScript, Python, and React.js, and I continuously seek opportunities to expand my technical expertise.
+                For my On-the-Job Training, my goal is to gain valuable hands-on experience in a professional development environment, collaborate with experienced mentors and peers, and contribute meaningfully to projects that create real-world impact. I am adaptable, eager to learn, and dedicated to delivering results as a proactive team player.</p>
+
+                <h3 class="text-2xl font-bold mb-6">What I'm Doing</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="bg-info rounded-xl p-6">
+                        <h4 class="text-xl font-bold mb-2">Web Design</h4>
+                        <p class="text-subtle">The most modern and high-quality design made at a professional level.</p>
+                    </div>
+                    <div class="bg-info rounded-xl p-6">
+                        <h4 class="text-xl font-bold mb-2">Web Development</h4>
+                        <p class="text-subtle">High-quality development of sites at the professional level.</p>
+                    </div>
+                    <div class="bg-info rounded-xl p-6">
+                        <h4 class="text-xl font-bold mb-2">Mobile Apps</h4>
+                        <p class="text-subtle">Professional development of applications for iOS and Android.</p>
+                    </div>
+                    <div class="bg-info rounded-xl p-6">
+                        <h4 class="text-xl font-bold mb-2">Photography</h4>
+                        <p class="text-subtle">I make high-quality photos of any category at a professional level.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div id="skills" class="section-content p-6 md:p-8 bg-sidebar rounded-2xl">
+                <h2 class="text-3xl md:text-4xl font-bold mb-6">My Skills</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="bg-info rounded-xl p-6">
+                        <h4 class="text-xl font-bold mb-2">HTML/CSS</h4>
+                        <div class="w-full bg-gray-600 rounded-full h-2.5">
+                            <div class="bg-blue-500 h-2.5 rounded-full" style="width: 90%"></div>
+                        </div>
+                    </div>
+                    <div class="bg-info rounded-xl p-6">
+                        <h4 class="text-xl font-bold mb-2">JavaScript</h4>
+                        <div class="w-full bg-gray-600 rounded-full h-2.5">
+                            <div class="bg-blue-500 h-2.5 rounded-full" style="width: 85%"></div>
+                        </div>
+                    </div>
+                    <div class="bg-info rounded-xl p-6">
+                        <h4 class="text-xl font-bold mb-2">MySQL</h4>
+                        <div class="w-full bg-gray-600 rounded-full h-2.5">
+                            <div class="bg-blue-500 h-2.5 rounded-full" style="width: 75%"></div>
+                        </div>
+                    </div>
+                    <div class="bg-info rounded-xl p-6">
+                        <h4 class="text-xl font-bold mb-2">Tailwind CSS</h4>
+                        <div class="w-full bg-gray-600 rounded-full h-2.5">
+                            <div class="bg-blue-500 h-2.5 rounded-full" style="width: 95%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="education" class="section-content p-6 md:p-8 bg-sidebar rounded-2xl">
+                <h2 class="text-3xl md:text-4xl font-bold mb-6">Education</h2>
+                <div class="space-y-6">
+                    <div class="bg-info rounded-xl p-6">
+                        <p class="text-sm text-subtle mb-2">2022 - current</p>
+                        <h4 class="text-xl font-bold mb-1">Bachelor of Science in Information Technology</h4>
+                        <p class="text-subtle">University of Mindanao Digos College</p>
+                    </div>
+                    <div class="bg-info rounded-xl p-6">
+                        <p class="text-sm text-subtle mb-2">2016 - 2022</p>
+                        <h4 class="text-xl font-bold mb-1">Highschool</h4>
+                        <p class="text-subtle">Holy cross academy, INC.</p>
+                        <p class="text-subtle">Computer Visual Art</p>
+                    </div>
+                    <div class="bg-info rounded-xl p-6">
+                        <p class="text-sm text-subtle mb-2">2000 - 2016</p>
+                        <h4 class="text-xl font-bold mb-1">Elementary School</h4>
+                        <p class="text-subtle">Dawis Elementary School</p>
+                    </div>
+                </div>
+            </div>
+
+           <div id="certification" class="section-content p-6 md:p-8 bg-sidebar rounded-2xl">
+    <h2 class="text-3xl md:text-4xl font-bold mb-6">Certification</h2>
+    
+    <!-- Vertical scroll -->
+    <div class="overflow-y-auto max-h-[600px] pr-2"> 
+        
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"> 
+            
+            <div class="bg-info rounded-xl p-6">
+                <img src="Cyber Threat Management.jpg" class="certificate-image rounded-lg mb-4 w-full cursor-pointer">
+                <h4 class="text-xl font-bold mb-2">Cyber Threat Management</h4>
+                <p class="text-subtle">Awarded for successfully completing a course on cyber threat management.</p>
+            </div>
+
+            <div class="bg-info rounded-xl p-6">
+                <img src="Introduction Cybersecurity.jpg" class="certificate-image rounded-lg mb-4 w-full cursor-pointer">
+                <h4 class="text-xl font-bold mb-2">Introduction to Cybersecurity</h4>
+                <p class="text-subtle">Received for mastering foundational cybersecurity principles.</p>
+            </div>
+
+            <div class="bg-info rounded-xl p-6">
+                <img src="Network Defense.jpg" class="certificate-image rounded-lg mb-4 w-full cursor-pointer">
+                <h4 class="text-xl font-bold mb-2">Network Defense Certification</h4>
+                <p class="text-subtle">Awarded for successfully completing the course on Network Defense.</p>
+            </div>
+
+            <div class="bg-info rounded-xl p-6">
+                <img src="designing presentation slides.jpg" class="certificate-image rounded-lg mb-4 w-full cursor-pointer">
+                <h4 class="text-xl font-bold mb-2">designing presentation slides</h4>
+                <p class="text-subtle">This certifies that the recipient has successfully completed the Designing Presentation Slides course.</p>
+            </div>
+
+            <div class="bg-info rounded-xl p-6">
+                <img src="microsoft productivity tools.jpg" class="certificate-image rounded-lg mb-4 w-full cursor-pointer">
+                <h4 class="text-xl font-bold mb-2">microsoft productivity tools</h4>
+                <p class="text-subtle">Awarded to acknowledge the successful completion of training in Microsoft Productivity Tools.</p>
+            </div>
+
+            <div class="bg-info rounded-xl p-6">
+                <img src="navigating google workspace.jpg" class="certificate-image rounded-lg mb-4 w-full cursor-pointer">
+                <h4 class="text-xl font-bold mb-2">navigating google workspace</h4>
+                <p class="text-subtle">Presented in recognition of the successful completion of the Navigating Google Workspace course.</p>
+            </div>
+
+             <div class="bg-info rounded-xl p-6">
+                <img src="Introduction to CSS.jpg" class="certificate-image rounded-lg mb-4 w-full cursor-pointer">
+                <h4 class="text-xl font-bold mb-2">Introduction to CSS</h4>
+                <p class="text-subtle">This certificate acknowledges the successful completion of the CSS Fundamentals course.</p>
+            </div>
+
+             <div class="bg-info rounded-xl p-6">
+                <img src="Installing and Configuring Computer System.jpg" class="certificate-image rounded-lg mb-4 w-full cursor-pointer">
+                <h4 class="text-xl font-bold mb-2">Installing and Configuring Computer System</h4>
+                <p class="text-subtle">Awarded for completing the course on installing and configuring computer systems.</p>
+            </div>
+
+             <div class="bg-info rounded-xl p-6">
+                <img src="Maintaining Computer System and Networks.jpg" class="certificate-image rounded-lg mb-4 w-full cursor-pointer">
+                <h4 class="text-xl font-bold mb-2">Maintaining Computer System and Networks</h4>
+                <p class="text-subtle">Awarded for successfully completing the course on Maintaining Computer Systems and Networks.</p>
+            </div>
+
+            <div class="bg-info rounded-xl p-6">
+                <img src="Setting Up Computer Servers.jpg" class="certificate-image rounded-lg mb-4 w-full cursor-pointer">
+                <h4 class="text-xl font-bold mb-2">Setting Up Computer Servers</h4>
+                <p class="text-subtle">This certifies that the recipient has successfully completed training in setting up computer servers.</p>
+            </div>
+
+            <div class="bg-info rounded-xl p-6">
+                <img src="Settings Up Computer Networks.jpg" class="certificate-image rounded-lg mb-4 w-full cursor-pointer">
+                <h4 class="text-xl font-bold mb-2">Settings Up Computer Networks</h4>
+                <p class="text-subtle">Awarded for completing hands-on training in installing and configuring computer networks.</p>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+           <div id="projects" class="section-content p-6 md:p-8 bg-sidebar rounded-2xl">
+    <h2 class="text-3xl md:text-4xl font-bold mb-6">Projects</h2>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="bg-info rounded-xl p-6">
+            <h4 class="text-xl font-bold mb-2">GOODLIFE SYSTEM</h4>
+
+            <!-- Clickable project image -->
+            <img src="Dashboard admin in GOODLIFE.png" alt="GOODLIFE SYSTEM Screenshot" 
+                 class="rounded-lg mb-4 w-full h-auto object-cover cursor-pointer hover:opacity-90 transition-opacity duration-200"
+                 id="openModal">
+
+            <p class="text-subtle mb-4">“Fast, Secure, and Convenient Online Financial Services”</p>
+            <a href="https://github.com/junepaullanaban/Project-System---GOODLIFE-System" target="_blank" rel="noopener noreferrer" class="inline-block py-2 px-4 bg-blue-600 text-white rounded-lg font-bold hover:bg-blue-700 transition-colors duration-200">
+                View on GitHub Source Code
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Modal -->
+<div id="imageModal" class="fixed inset-0 bg-black bg-opacity-70 hidden items-center justify-center z-50">
+    <div class="relative">
+        <!-- Close button -->
+        <button id="closeModal" class="absolute top-2 right-2 text-white text-2xl font-bold hover:text-gray-300">&times;</button>
+        <!-- Modal image -->
+        <img id="modalImage" src="Dashboard admin in GOODLIFE.png" alt="Screenshot of GOODLIFE SYSTEM Dashboard" class="max-w-full max-h-screen rounded-lg">
+    </div>
+</div>
+
+<script>
+    const openModal = document.getElementById('openModal');
+    const modal = document.getElementById('imageModal');
+    const closeModal = document.getElementById('closeModal');
+    const modalImage = document.getElementById('modalImage');
+
+    openModal.addEventListener('click', () => {
+        modal.classList.remove('hidden');
+    });
+
+    closeModal.addEventListener('click', () => {
+        modal.classList.add('hidden');
+    });
+
+    // Optional: close modal when clicking outside the image
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) {
+            modal.classList.add('hidden');
+        }
+    });
+</script>
+
+
+            <div id="contact" class="section-content p-6 md:p-8 bg-sidebar rounded-2xl">
+                <h2 class="text-3xl md:text-4xl font-bold mb-6">Contact</h2>
+                <!-- NOTE: This is a client-side form. For actual submissions, you'll need a backend service like Firebase, Formspree, or a custom API endpoint. -->
+                <form id="contact-form" class="space-y-4">
+                    <div>
+                        <label for="name" class="block text-sm text-subtle">Your Name</label>
+                        <input type="text" id="name" class="w-full mt-1 p-3 bg-info rounded-lg border border-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    </div>
+                    <div>
+                        <label for="email" class="block text-sm text-subtle">Your Email</label>
+                        <input type="email" id="email" class="w-full mt-1 p-3 bg-info rounded-lg border border-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    </div>
+                    <div>
+                        <label for="message" class="block text-sm text-subtle">Message</label>
+                        <textarea id="message" rows="4" class="w-full mt-1 p-3 bg-info rounded-lg border border-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
+                    </div>
+                    <button type="submit" class="w-full py-3 bg-blue-600 rounded-lg text-white font-bold hover:bg-blue-700 transition-colors duration-200">Send Message</button>
+                </form>
+                <div id="contact-message" class="mt-4 text-center hidden">
+                    <p class="text-green-400">Thank you for your message! I'll get back to you shortly.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="image-modal" class="image-modal">
+        <span class="close-button">&times;</span>
+        <img class="modal-content" id="modal-image" alt="Full-size certificate image">
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const tabLinks = document.querySelectorAll('.tab-link');
+            const sections = document.querySelectorAll('.section-content');
+            const certificateImages = document.querySelectorAll('.certificate-image');
+            const imageModal = document.getElementById('image-modal');
+            const modalImage = document.getElementById('modal-image');
+            const closeButton = document.querySelector('.close-button');
+            const body = document.body;
+            const themeToggle = document.getElementById('theme-toggle');
+            const moonIcon = document.getElementById('moon-icon');
+            const sunIcon = document.getElementById('sun-icon');
+
+            // Theme toggle logic
+            const currentTheme = localStorage.getItem('theme') || 'dark';
+            if (currentTheme === 'light') {
+                body.classList.remove('dark');
+                body.classList.add('light');
+                moonIcon.classList.remove('hidden');
+                sunIcon.classList.add('hidden');
+            } else {
+                body.classList.remove('light');
+                body.classList.add('dark');
+                localStorage.setItem('theme', 'dark');
+                moonIcon.classList.add('hidden');
+                sunIcon.classList.remove('hidden');
+            }
+
+            themeToggle.addEventListener('click', () => {
+                if (body.classList.contains('dark')) {
+                    body.classList.remove('dark');
+                    body.classList.add('light');
+                    localStorage.setItem('theme', 'light');
+                    moonIcon.classList.remove('hidden');
+                    sunIcon.classList.add('hidden');
+                } else {
+                    body.classList.remove('light');
+                    body.classList.add('dark');
+                    localStorage.setItem('theme', 'dark');
+                    moonIcon.classList.add('hidden');
+                    sunIcon.classList.remove('hidden');
+                }
+            });
+
+            // Set the initial active link and section
+            const initialLink = document.querySelector('.tab-link[data-section="about"]');
+            if (initialLink) initialLink.classList.add('active-link');
+            const initialSection = document.getElementById('about');
+            if (initialSection) initialSection.classList.add('active');
+
+            tabLinks.forEach(link => {
+                link.addEventListener('click', () => {
+                    const sectionId = link.dataset.section;
+
+                    // Remove active class from all links and sections
+                    tabLinks.forEach(item => item.classList.remove('active-link'));
+                    sections.forEach(item => item.classList.remove('active'));
+
+                    // Add active class to the clicked link and corresponding section
+                    link.classList.add('active-link');
+                    const targetSection = document.getElementById(sectionId);
+                    if (targetSection) targetSection.classList.add('active');
+                });
+            });
+
+            // Handle image clicks to open the modal
+            certificateImages.forEach(image => {
+                image.addEventListener('click', () => {
+                    modalImage.src = image.src;
+                    modalImage.alt = image.alt;
+                    imageModal.classList.add('visible');
+                    body.classList.add('blur-background');
+                });
+            });
+
+            // Handle closing the modal
+            const closeModal = () => {
+                imageModal.classList.remove('visible');
+                body.classList.remove('blur-background');
+            };
+
+            closeButton.addEventListener('click', closeModal);
+
+            // Close modal when clicking outside the image
+            imageModal.addEventListener('click', (e) => {
+                if (e.target === imageModal) {
+                    closeModal();
+                }
+            });
+
+            // Contact form functionality (note: this is a client-side simulation, a backend is required for real form submissions)
+            const contactForm = document.getElementById('contact-form');
+            const contactMessage = document.getElementById('contact-message');
+
+            contactForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+
+                const name = document.getElementById('name');
+                const email = document.getElementById('email');
+                const message = document.getElementById('message');
+
+                if (!name.value || !email.value || !message.value) {
+                    console.log('Please fill out all fields.');
+                    return;
+                }
+
+                console.log('Form Submitted!');
+                console.log(`Name: ${name.value}`);
+                console.log(`Email: ${email.value}`);
+                console.log(`Message: ${message.value}`);
+
+                // Display a success message
+                contactMessage.classList.remove('hidden');
+
+                // Clear the form fields
+                name.value = '';
+                email.value = '';
+                message.value = '';
+
+                // Hide the message after 5 seconds
+                setTimeout(() => {
+                    contactMessage.classList.add('hidden');
+                }, 5000);
+            });
+            
+            // Functionality to copy email/phone to clipboard
+            function copyToClipboard(textToCopy, tooltipElement) {
+                const tempInput = document.createElement('input');
+                tempInput.value = textToCopy;
+                document.body.appendChild(tempInput);
+                tempInput.select();
+                document.execCommand('copy');
+                document.body.removeChild(tempInput);
+                
+                tooltipElement.textContent = "Copied!";
+                setTimeout(() => {
+                    tooltipElement.textContent = "Copy to Clipboard";
+                }, 1000);
+            }
+
+            document.getElementById('email-contact').addEventListener('click', () => {
+                const email = document.getElementById('email-text').textContent;
+                const tooltip = document.getElementById('email-tooltip');
+                copyToClipboard(email, tooltip);
+            });
+
+            document.getElementById('phone-contact').addEventListener('click', () => {
+                const phone = document.getElementById('phone-text').textContent;
+                const tooltip = document.getElementById('phone-tooltip');
+                copyToClipboard(phone, tooltip);
+            });
+
+        });
+    </script>
+</body>
+</html>
